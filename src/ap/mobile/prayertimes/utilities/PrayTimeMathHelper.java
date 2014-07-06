@@ -4,11 +4,8 @@ public class PrayTimeMathHelper {
 	// ---------------------- Trigonometric Functions -----------------------
     // range reduce angle in degrees.
     public static double fixangle(double a) {
-
         a = a - (360 * (Math.floor(a / 360.0)));
-
         a = a < 0 ? (a + 360) : a;
-
         return a;
     }
 
@@ -24,7 +21,7 @@ public class PrayTimeMathHelper {
         return ((alpha * 180.0) / Math.PI);
     }
 
-    // deree to radian
+    // degree to radian
     public static double DegreesToRadians(double alpha) {
         return ((alpha * Math.PI) / 180.0);
     }

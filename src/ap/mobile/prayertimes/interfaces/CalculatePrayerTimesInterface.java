@@ -2,8 +2,8 @@ package ap.mobile.prayertimes.interfaces;
 
 import java.util.ArrayList;
 
-import ap.mobile.prayertimes.base.PrayerTime;
+import ap.mobile.prayertimes.base.Prayer;
 
 public interface CalculatePrayerTimesInterface {
-	public void onCalculateComplete(ArrayList<PrayerTime> prayerTimes);
+	public void onCalculateComplete(ArrayList<Prayer> prayerTimes);
 }

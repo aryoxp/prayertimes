@@ -27,8 +27,9 @@ package ap.mobile.prayertimes.utilities;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+
 import android.util.SparseArray;
+import ap.mobile.prayertimes.base.Prayer;
 
 public class PrayTime {
 
@@ -73,7 +74,6 @@ public class PrayTime {
     
     // Time Names
     private ArrayList<String> timeNames;
-    private String invalidTime = "--"; // The string used for invalid times
 
     // --------------------- Technical Settings --------------------
     private int numIterations = 1; // number of iterations needed to compute times
@@ -94,37 +94,42 @@ public class PrayTime {
     // Tuning offsets {fajr, sunrise, dhuhr, asr, sunset, maghrib, isha}
     private int[] offsets = {0,0,0,0,0,0,0};
 
+    private ArrayList<Prayer> prayerList = new ArrayList<Prayer>();
+    
+    public PrayTime(int calculationMethod, int asrJuristic, int timeFormat, int adjustHighLats) {
+    	this.calcMethod = calculationMethod;
+    	this.asrJuristic = asrJuristic;
+    	this.timeFormat = timeFormat;
+    	this.adjustHighLats = adjustHighLats;
+    	
+    	init();
+    }
+    
 	public PrayTime() {
         // Initialize vars
+		this.calcMethod = PrayTime.Egypt;
+		this.asrJuristic = PrayTime.Shafii;
+		this.dhuhrMinutes = 0;
+		this.adjustHighLats = PrayTime.MidNight;
+		this.timeFormat = PrayTime.Time12;
+        
+        init();
+    }
 
-        this.setCalcMethod(PrayTime.Jafari);
-        this.setAsrJuristic(PrayTime.Shafii);
-        this.setDhuhrMinutes(0);
-        this.setAdjustHighLats(PrayTime.MidNight);
-        this.setTimeFormat(PrayTime.Time24);
-
-        // Time Names
+	private void init() {
+		// Time Names
         timeNames = new ArrayList<String>();
-        timeNames.add("Fajr");
-        timeNames.add("Sunrise");
-        timeNames.add("Dhuhr");
-        timeNames.add("Asr");
+        timeNames.add("Subuh");
+        timeNames.add("Syuruk");
+        timeNames.add("Dzuhur");
+        timeNames.add("Ashar");
         timeNames.add("Sunset");
         timeNames.add("Maghrib");
-        timeNames.add("Isha");
-
-        invalidTime = "-----"; // The string used for invalid times
+        timeNames.add("Isya");
 
         // ------------------- Calc Method Parameters --------------------
         // Tuning offsets {fajr, sunrise, dhuhr, asr, sunset, maghrib, isha}
-        offsets = new int[7];
-        offsets[0] = 0;
-        offsets[1] = 0;
-        offsets[2] = 0;
-        offsets[3] = 0;
-        offsets[4] = 0;
-        offsets[5] = 0;
-        offsets[6] = 0;
+        offsets = new int[] { 0,0,0,0,0,0,0 };
 
         /*
          *
@@ -142,8 +147,7 @@ public class PrayTime {
         methodParams.put(PrayTime.Egypt, 	new double[]{19.5,1,0,0,17.5});
         methodParams.put(PrayTime.Tehran, 	new double[]{17.7,0,4.5,0,14});
         methodParams.put(PrayTime.Custom, 	new double[]{18,1,0,0,17});
-        
-    }
+	}
 
     
 
@@ -245,27 +249,38 @@ public class PrayTime {
     }
 
     // -------------------- Interface Functions --------------------
-    // return prayer times for a given date
-    private ArrayList<String> getDatePrayerTimes(int year, int month, int day,
-            double latitude, double longitude, double tZone) {
-        this.setLat(latitude);
-        this.setLng(longitude);
-        this.setTimeZone(tZone);
-        this.setJDate(julian(year, month, day));
-        double lonDiff = longitude / (15.0 * 24.0);
-        this.setJDate(this.getJDate() - lonDiff);
-        return computeDayTimes();
-    }
-
-    // return prayer times for a given date
-    public ArrayList<String> getPrayerTimes(Calendar date, double latitude,
+    
+    public ArrayList<Prayer> getPrayerList(Calendar date, double latitude,
             double longitude, double tZone) {
 
         int year = date.get(Calendar.YEAR);
         int month = date.get(Calendar.MONTH);
         int day = date.get(Calendar.DATE);
 
-        return getDatePrayerTimes(year, month+1, day, latitude, longitude, tZone);
+        this.setLat(latitude);
+        this.setLng(longitude);
+        this.setTimeZone(tZone);
+        this.setJDate(julian(year, month, day));
+        double lonDiff = longitude / (15.0 * 24.0);
+        this.setJDate(this.getJDate() - lonDiff);
+        
+        double[] times = {5, 6, 12, 13, 18, 18, 18}; // default times
+
+        for (int i = 1; i <= this.numIterations; i++) {
+            times = computeTimes(times);
+        }
+        
+        times = adjustTimes(times);
+        times = tuneTimes(times);
+        
+        this.prayerList = new ArrayList<Prayer>();
+    	
+    	for(int x=0; x<times.length; x++) {
+    		Prayer p = new Prayer(this.timeNames.get(x), times[x]);
+    		this.prayerList.add(p);
+    	}
+        
+        return this.prayerList;
     }
 
     // set custom values for calculation parameters
@@ -316,82 +331,9 @@ public class PrayTime {
 
     }
 
-    // convert double hours to 24h format
-    public String floatToTime24(double time) {
+    
 
-        String result;
-
-        if (Double.isNaN(time)) {
-            return invalidTime;
-        }
-
-        time = PrayTimeMathHelper.fixhour(time + 0.5 / 60.0); // add 0.5 minutes to round
-        int hours = (int)Math.floor(time);
-        double minutes = Math.floor((time - hours) * 60.0);
-
-        if ((hours >= 0 && hours <= 9) && (minutes >= 0 && minutes <= 9)) {
-            result = "0" + hours + ":0" + Math.round(minutes);
-        } else if ((hours >= 0 && hours <= 9)) {
-            result = "0" + hours + ":" + Math.round(minutes);
-        } else if ((minutes >= 0 && minutes <= 9)) {
-            result = hours + ":0" + Math.round(minutes);
-        } else {
-            result = hours + ":" + Math.round(minutes);
-        }
-        return result;
-    }
-
-    // convert double hours to 12h format
-    public String floatToTime12(double time, boolean noSuffix) {
-
-        if (Double.isNaN(time)) {
-            return invalidTime;
-        }
-
-        time = PrayTimeMathHelper.fixhour(time + 0.5 / 60); // add 0.5 minutes to round
-        int hours = (int)Math.floor(time);
-        double minutes = Math.floor((time - hours) * 60);
-        String suffix, result;
-        if (hours >= 12) {
-            suffix = "pm";
-        } else {
-            suffix = "am";
-        }
-        hours = ((((hours+ 12) -1) % (12))+ 1);
-        /*hours = (hours + 12) - 1;
-        int hrs = (int) hours % 12;
-        hrs += 1;*/
-        if (noSuffix == false) {
-            if ((hours >= 0 && hours <= 9) && (minutes >= 0 && minutes <= 9)) {
-                result = "0" + hours + ":0" + Math.round(minutes) + " "
-                        + suffix;
-            } else if ((hours >= 0 && hours <= 9)) {
-                result = "0" + hours + ":" + Math.round(minutes) + " " + suffix;
-            } else if ((minutes >= 0 && minutes <= 9)) {
-                result = hours + ":0" + Math.round(minutes) + " " + suffix;
-            } else {
-                result = hours + ":" + Math.round(minutes) + " " + suffix;
-            }
-
-        } else {
-            if ((hours >= 0 && hours <= 9) && (minutes >= 0 && minutes <= 9)) {
-                result = "0" + hours + ":0" + Math.round(minutes);
-            } else if ((hours >= 0 && hours <= 9)) {
-                result = "0" + hours + ":" + Math.round(minutes);
-            } else if ((minutes >= 0 && minutes <= 9)) {
-                result = hours + ":0" + Math.round(minutes);
-            } else {
-                result = hours + ":" + Math.round(minutes);
-            }
-        }
-        return result;
-
-    }
-
-    // convert double hours to 12h format with no suffix
-    public String floatToTime12NS(double time) {
-        return floatToTime12(time, true);
-    }
+    
 
     // ---------------------- Compute Prayer Times -----------------------
     // compute prayer times at given julian date
@@ -419,20 +361,6 @@ public class PrayTime {
 
     }
 
-    // compute prayer times at given julian date
-    private ArrayList<String> computeDayTimes() {
-        double[] times = {5, 6, 12, 13, 18, 18, 18}; // default times
-
-        for (int i = 1; i <= this.numIterations; i++) {
-            times = computeTimes(times);
-        }
-        
-        times = adjustTimes(times);
-        times = tuneTimes(times);
-        
-        return adjustTimesFormat(times);
-    }
-
     // adjust times in a prayer time array
     private double[] adjustTimes(double[] times) {
         for (int i = 0; i < times.length; i++) {
@@ -454,30 +382,6 @@ public class PrayTime {
         }
         
         return times;
-    }
-
-    // convert times array to given time format
-    private ArrayList<String> adjustTimesFormat(double[] times) {
-
-        ArrayList<String> result = new ArrayList<String>();
-
-        if (this.getTimeFormat() == PrayTime.Floating) {
-            for (double time : times) {
-                result.add(String.valueOf(time));
-            }
-            return result;
-        }
-
-        for (int i = 0; i < 7; i++) {
-            if (this.getTimeFormat() == PrayTime.Time12) {
-                result.add(floatToTime12(times[i], false));
-            } else if (this.getTimeFormat() == PrayTime.Time12NS) {
-                result.add(floatToTime12(times[i], true));
-            } else {
-                result.add(floatToTime24(times[i]));
-            }
-        }
-        return result;
     }
 
     // adjust Fajr, Isha and Maghrib for locations in higher latitudes
@@ -553,6 +457,7 @@ public class PrayTime {
     /**
      * @param args
      */
+    /*
     public static void main(String[] args) {
     	// -7.952280, 112.608851
         double latitude = -37.823689;
@@ -581,6 +486,7 @@ public class PrayTime {
         }
 
     }
+    */
 
     public int getCalcMethod() {
         return calcMethod;

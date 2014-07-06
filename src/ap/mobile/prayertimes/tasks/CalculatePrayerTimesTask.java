@@ -2,16 +2,13 @@ package ap.mobile.prayertimes.tasks;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-
 import android.os.AsyncTask;
-import android.util.Log;
-import ap.mobile.prayertimes.base.PrayerTime;
+import ap.mobile.prayertimes.base.Prayer;
 import ap.mobile.prayertimes.base.UserLocation;
 import ap.mobile.prayertimes.interfaces.CalculatePrayerTimesInterface;
 import ap.mobile.prayertimes.utilities.PrayTime;
 
-public class CalculatePrayerTimesTask extends AsyncTask<UserLocation, Void, ArrayList<PrayerTime>> {
+public class CalculatePrayerTimesTask extends AsyncTask<UserLocation, Void, ArrayList<Prayer>> {
 
 	CalculatePrayerTimesInterface mCallback;
 	
@@ -20,27 +17,22 @@ public class CalculatePrayerTimesTask extends AsyncTask<UserLocation, Void, Arra
 	}
 	
 	@Override
-	protected ArrayList<PrayerTime> doInBackground(UserLocation... params) {
+	protected ArrayList<Prayer> doInBackground(UserLocation... params) {
 		
-		PrayTime prayers = new PrayTime();
-		
-		prayers.setTimeFormat(PrayTime.Time12);
-        prayers.setCalcMethod(PrayTime.Egypt);
-        prayers.setAsrJuristic(PrayTime.Shafii);
-        prayers.setAdjustHighLats(PrayTime.AngleBased);
+		PrayTime prayers = new PrayTime(PrayTime.Egypt, 
+				PrayTime.Shafii, 
+				PrayTime.Time12, 
+				PrayTime.AngleBased);
         
-        int[] offsets = {0, 0, 0, 0, 0, 0, 0}; // {Fajr,Sunrise,Dhuhr,Asr,Sunset,Maghrib,Isha}
-        prayers.tune(offsets);
-
-        Date now = new Date();
         Calendar cal = Calendar.getInstance();
-        cal.setTime(now);
         
         UserLocation userLocation = params[0];
         double latitude = userLocation.latitude;
         double longitude = userLocation.longitude;
         double timezone = userLocation.timezone;
         
+        ArrayList<Prayer> prayerTimesList = prayers.getPrayerList(cal, latitude, longitude, timezone);
+        /*
         ArrayList<String> prayerTimes = prayers.getPrayerTimes(cal, latitude, longitude, timezone);
         ArrayList<String> prayerNames = prayers.getTimeNames();
         ArrayList<PrayerTime> prayerTimesList = new ArrayList<PrayerTime>();
@@ -48,13 +40,13 @@ public class CalculatePrayerTimesTask extends AsyncTask<UserLocation, Void, Arra
         	Log.d("prayer", prayerNames.get(i) + " - " + prayerTimes.get(i));
         	prayerTimesList.add(new PrayerTime(prayerNames.get(i), prayerTimes.get(i)));
         }
-        
+        */
         return prayerTimesList;
         
 	}
 	
 	@Override
-	protected void onPostExecute(ArrayList<PrayerTime> result) {
+	protected void onPostExecute(ArrayList<Prayer> result) {
 		this.mCallback.onCalculateComplete(result);
 	}
 

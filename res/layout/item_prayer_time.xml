@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp"
+    android:padding="8dp"
     android:orientation="horizontal">
 
     <TextView
@@ -14,6 +14,7 @@
         android:fontFamily="sans-serif-light"
         android:text="Subuh"
         android:textSize="18sp"
+        android:textColor="@color/textDefault"
         tools:ignore="HardcodedText,UnusedAttribute" />
 
     <TextView
@@ -26,6 +27,7 @@
         android:text="4:24 AM"
         android:textSize="18sp"
         android:textAllCaps="true"
+        android:textColor="@color/textDefault"
         tools:ignore="HardcodedText,UnusedAttribute" />
 
 </LinearLayout>

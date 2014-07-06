@@ -51,8 +51,6 @@ public class Compass extends FrameLayout {
 	
 	public void update(double qibla, double north){	
 		
-		
-		
 		this.n = (float) north;
 		this.q = (float) qibla;
 		

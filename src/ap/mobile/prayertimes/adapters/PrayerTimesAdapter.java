@@ -10,14 +10,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import ap.mobile.prayertimes.R;
-import ap.mobile.prayertimes.base.PrayerTime;
+import ap.mobile.prayertimes.base.Prayer;
 
 public class PrayerTimesAdapter extends BaseAdapter {
 
 	private Context context;
-	private ArrayList<PrayerTime> prayerTimes;
+	private ArrayList<Prayer> prayerTimes;
 	
-	public PrayerTimesAdapter(Context context, ArrayList<PrayerTime> prayerTimes) {
+	public PrayerTimesAdapter(Context context, ArrayList<Prayer> prayerTimes) {
 		this.context = context;
 		this.prayerTimes = prayerTimes;
 	}
@@ -55,8 +55,8 @@ public class PrayerTimesAdapter extends BaseAdapter {
 		}
 		
 		ViewHolder vh = (ViewHolder) convertView.getTag();
-		vh.prayerNameText.setText(this.prayerTimes.get(position).name);
-		vh.prayerTimeText.setText(this.prayerTimes.get(position).time);
+		vh.prayerNameText.setText(this.prayerTimes.get(position).getName());
+		vh.prayerTimeText.setText(this.prayerTimes.get(position).toString(Prayer.FORMAT_12));
 		
 		return convertView;
 	}
