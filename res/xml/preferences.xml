@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+            android:title="Calculation Method">
+
+        <ListPreference
+                android:key="calcMethodPreference"
+                android:title="Calculation Method"
+                android:summary="Calculation method in determining prayer times"
+                android:dialogTitle="Set Calculation Method"
+                android:entries="@array/calcMethod"
+                android:entryValues="@array/calcMethodValues"
+                android:defaultValue="5"
+                />
+
+        <ListPreference
+                android:key="asrJuristicPreference"
+                android:title="Ashar Juristic"
+                android:summary="Juristic in determining Ashar prayer time"
+                android:dialogTitle="Set Ashar Juristic Method"
+                android:entries="@array/asrJuristic"
+                android:entryValues="@array/asrJuristicValues"
+                android:defaultValue="0"
+                />
+        
+        <ListPreference
+                android:key="timeFormatPreference"
+                android:title="Time Format Display"
+                android:summary="Format used to display prayer times"
+                android:dialogTitle="Set Time Format"
+                android:entries="@array/timeFormat"
+                android:entryValues="@array/timeFormatValues"
+                android:defaultValue="1"
+                />
+        
+        <ListPreference
+                android:key="adjustHighLatsPreference"
+                android:title="High Latitudes Adjustment"
+                android:summary="Adjusting methods for higher latitudes"
+                android:dialogTitle="Set High Latitudes Adjustment"
+                android:entries="@array/adjustHighLats"
+                android:entryValues="@array/adjustHighLatsValues"
+                android:defaultValue="3"
+                />
+    </PreferenceCategory>
+
+</PreferenceScreen>

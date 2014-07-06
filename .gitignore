@@ -78,3 +78,8 @@ __resources/MoonStar.ai
 __resources/moonstar.png
 __resources/Moonstar.psd
 __resources/Red_star.svg
+bin/classes/ap/mobile/prayertimes/MethodPreferenceActivity.class
+bin/classes/ap/mobile/prayertimes/MethodPreferenceFragment.class
+bin/classes/ap/mobile/prayertimes/R$array.class
+bin/classes/ap/mobile/prayertimes/R$xml.class
+bin/classes/ap/mobile/prayertimes/utilities/PrayTimeOriginal.class

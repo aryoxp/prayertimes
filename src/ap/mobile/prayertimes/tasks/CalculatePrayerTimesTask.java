@@ -2,6 +2,8 @@ package ap.mobile.prayertimes.tasks;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import ap.mobile.prayertimes.base.Prayer;
 import ap.mobile.prayertimes.base.UserLocation;
@@ -10,19 +12,21 @@ import ap.mobile.prayertimes.utilities.PrayTime;
 
 public class CalculatePrayerTimesTask extends AsyncTask<UserLocation, Void, ArrayList<Prayer>> {
 
-	CalculatePrayerTimesInterface mCallback;
+	private CalculatePrayerTimesInterface mCallback;
+	private SharedPreferences prefs;
 	
-	public CalculatePrayerTimesTask(CalculatePrayerTimesInterface mCallback) {
+	public CalculatePrayerTimesTask(SharedPreferences prefs, CalculatePrayerTimesInterface mCallback) {
 		this.mCallback = mCallback;
+		this.prefs = prefs;
 	}
 	
 	@Override
 	protected ArrayList<Prayer> doInBackground(UserLocation... params) {
-		
-		PrayTime prayers = new PrayTime(PrayTime.Egypt, 
-				PrayTime.Shafii, 
-				PrayTime.Time12, 
-				PrayTime.AngleBased);
+				
+		PrayTime prayTime = new PrayTime(Integer.valueOf(this.prefs.getString("calcMethodPreference", "0")), 
+				Integer.valueOf(this.prefs.getString("asrJuristicPreference", "0")), 
+				Integer.valueOf(this.prefs.getString("timeFormatPreference", "0")), 
+				Integer.valueOf(this.prefs.getString("adjustHighLatsPreference", "0")));
         
         Calendar cal = Calendar.getInstance();
         
@@ -31,16 +35,7 @@ public class CalculatePrayerTimesTask extends AsyncTask<UserLocation, Void, Arra
         double longitude = userLocation.longitude;
         double timezone = userLocation.timezone;
         
-        ArrayList<Prayer> prayerTimesList = prayers.getPrayerList(cal, latitude, longitude, timezone);
-        /*
-        ArrayList<String> prayerTimes = prayers.getPrayerTimes(cal, latitude, longitude, timezone);
-        ArrayList<String> prayerNames = prayers.getTimeNames();
-        ArrayList<PrayerTime> prayerTimesList = new ArrayList<PrayerTime>();
-        for (int i = 0; i < prayerTimes.size(); i++) {
-        	Log.d("prayer", prayerNames.get(i) + " - " + prayerTimes.get(i));
-        	prayerTimesList.add(new PrayerTime(prayerNames.get(i), prayerTimes.get(i)));
-        }
-        */
+        ArrayList<Prayer> prayerTimesList = prayTime.getPrayerList(cal, latitude, longitude, timezone);        
         return prayerTimesList;
         
 	}

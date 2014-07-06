@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import android.support.v4.app.Fragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,8 +60,9 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	double qibla;
 	double north;
 	
-	public MainFragment() {
-		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this);
+	public MainFragment(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(prefs, this);
 	}
 
 	@Override
@@ -152,8 +156,10 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			
 			if(prayerTimes != null && prayerTimes.size() > 0) {
 				for(Prayer p:prayerTimes) {
-					if(time < p.getTime())
+					if(time < p.getTime()) {
 						nextPrayer = p;
+						break;
+					}
 				}
 			}
 			

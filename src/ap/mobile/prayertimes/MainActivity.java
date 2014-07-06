@@ -1,7 +1,9 @@
 package ap.mobile.prayertimes;
 
 import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -12,9 +14,11 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		if (savedInstanceState == null) {
+			MainFragment mainFragment = new MainFragment(this);
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new MainFragment()).commit();
+					.add(R.id.container, mainFragment).commit();
 		}
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 	}
 
 	@Override
@@ -32,6 +36,10 @@ public class MainActivity extends ActionBarActivity {
 		
 		switch(item.getItemId()) {
 		case R.id.action_settings:
+			
+			Intent i = new Intent(getApplicationContext(), MethodPreferenceActivity.class);
+			this.startActivity(i);
+			
 			return true;
 		case R.id.action_about:
 			AboutFragment aboutFragment = new AboutFragment();
