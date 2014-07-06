@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <FrameLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+	    <ImageView
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:contentDescription="CompassBody"
+	        android:src="@drawable/compass_body"
+	        tools:ignore="HardcodedText" />
+	    
+	    <FrameLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:padding="20dp"
+	        >
+		    <ImageView
+		        android:id="@+id/arrow_compass"
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:contentDescription="CompassBody"
+		        android:src="@drawable/compass_arrow"
+		        tools:ignore="HardcodedText" />
+		    
+		    <ImageView
+		        android:id="@+id/arrow_qibla"
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:contentDescription="CompassBody"
+		        android:src="@drawable/qibla_arrow"
+		        tools:ignore="HardcodedText" />
+		</FrameLayout>
+    </FrameLayout>
+</merge>
