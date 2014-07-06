@@ -60,9 +60,11 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	double qibla;
 	double north;
 	
+	SharedPreferences prefs;
+	
 	public MainFragment(Context context) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(prefs, this);
+		this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
 	}
 
 	@Override
@@ -81,6 +83,12 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		this.sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		this.sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		
+		//calculatePrayerTimes();
+        	
+		return rootView;
+	}
+
+	private void calculatePrayerTimes() {
 		GPSTracker gpsTracker = new GPSTracker(getActivity());
 		if(gpsTracker.canGetLocation()) {
 			double latitude = gpsTracker.getLatitude(); //-7.952280;
@@ -98,6 +106,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	        this.cityName.setText(LocationHelper.getLocation(getActivity(), latitude, longitude));
 	        
 			UserLocation userLocation = new UserLocation(latitude, longitude, timezone);
+			this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
 			this.calculatePrayerTimesTask.execute(userLocation);
 			
 			try {
@@ -109,17 +118,16 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		} else {
 			gpsTracker.showSettingsAlert();
 		}
-        	
-		return rootView;
 	}
 	
 	@Override
 	public void onResume() {
-	  sensorManager.registerListener(this, sensorMagneticField, SensorManager.SENSOR_DELAY_NORMAL);
-	  sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-	  if(this.prayerTimes != null && this.prayerTimes.size() > 0)
-		  this.handler.post(upcomingPrayerRunnable);
-	  super.onResume();
+		this.calculatePrayerTimes();
+		sensorManager.registerListener(this, sensorMagneticField, SensorManager.SENSOR_DELAY_NORMAL);
+		sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+		if(this.prayerTimes != null && this.prayerTimes.size() > 0)
+		this.handler.post(upcomingPrayerRunnable);
+		super.onResume();
 	}
 	 
 	 @Override
