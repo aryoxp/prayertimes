@@ -4,7 +4,7 @@
     <PreferenceCategory
             android:title="Calculation Method">
 
-        <ListPreference
+        <ap.mobile.prayertimes.views.PrayerListPreference
                 android:key="calcMethodPreference"
                 android:title="Calculation Method"
                 android:summary="Calculation method in determining prayer times"
@@ -14,7 +14,7 @@
                 android:defaultValue="5"
                 />
 
-        <ListPreference
+        <ap.mobile.prayertimes.views.PrayerListPreference
                 android:key="asrJuristicPreference"
                 android:title="Ashar Juristic"
                 android:summary="Juristic in determining Ashar prayer time"
@@ -24,7 +24,7 @@
                 android:defaultValue="0"
                 />
         
-        <ListPreference
+        <ap.mobile.prayertimes.views.PrayerListPreference
                 android:key="timeFormatPreference"
                 android:title="Time Format Display"
                 android:summary="Format used to display prayer times"
@@ -34,7 +34,7 @@
                 android:defaultValue="1"
                 />
         
-        <ListPreference
+        <ap.mobile.prayertimes.views.PrayerListPreference
                 android:key="adjustHighLatsPreference"
                 android:title="High Latitudes Adjustment"
                 android:summary="Adjusting methods for higher latitudes"

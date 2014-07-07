@@ -85,3 +85,4 @@ bin/classes/ap/mobile/prayertimes/R$xml.class
 bin/classes/ap/mobile/prayertimes/utilities/PrayTimeOriginal.class
 bin/classes/ap/mobile/prayertimes/interfaces/LocationInterface.class
 bin/classes/ap/mobile/prayertimes/tasks/LocationTask.class
+bin/res

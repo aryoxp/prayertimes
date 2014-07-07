@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="text" parent="android:Theme.Holo.Light">
+        <item name="android:padding">4dip</item>
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:textColorSecondary">@color/gray</item>
+    </style>
+    
+    <style name="layout">
+        <item name="android:background">#C0C0C0</item>
+    </style>
+</resources>
