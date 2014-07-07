@@ -13,9 +13,8 @@ import ap.mobile.prayertimes.R;
 
 public class Compass extends FrameLayout {
 	
-	View view;
-	View arrow_qibla;
-	View arrow_compass;
+	private View arrow_qibla;
+	private View arrow_compass;
 	private float n, q = 0;
 	private RotateAnimation northAnimation;
 	private RotateAnimation qiblaAnimation;
@@ -38,12 +37,9 @@ public class Compass extends FrameLayout {
 
 	private void inflateLayout() {
 		LayoutInflater li = (LayoutInflater)getContext().getSystemService(Service.LAYOUT_INFLATER_SERVICE);
-	    this.view = li.inflate(R.layout.compass, this);
-	    this.arrow_compass = this.view.findViewById(R.id.arrow_compass);
-	    this.arrow_qibla = this.view.findViewById(R.id.arrow_qibla);
-	    
-		
-		
+	    View v = li.inflate(R.layout.compass, this);
+	    this.arrow_compass = v.findViewById(R.id.arrow_compass);
+	    this.arrow_qibla = v.findViewById(R.id.arrow_qibla);
 	}
 	 
 	private float currentNorthDegree = 0;

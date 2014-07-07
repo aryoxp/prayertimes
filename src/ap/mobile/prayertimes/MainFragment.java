@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ import ap.mobile.prayertimes.views.Compass;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainFragment extends Fragment implements CalculatePrayerTimesInterface, LocationInterface, SensorEventListener {
+public class MainFragment extends Fragment implements CalculatePrayerTimesInterface, LocationInterface, SensorEventListener, OnClickListener {
 
 	CalculatePrayerTimesTask calculatePrayerTimesTask;
 	ListView prayerTimesListView;
@@ -63,8 +64,10 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	double qibla;
 	double north;
 	
-	SharedPreferences prefs;
+	double latitude, longitude;
 	
+	SharedPreferences prefs;
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -81,6 +84,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		this.calendarGregorian = (TextView) rootView.findViewById(R.id.mainGregorianDateText);
 		this.calendarHijr = (TextView) rootView.findViewById(R.id.mainHijrDateText);
 		this.compass = (Compass) rootView.findViewById(R.id.mainCompass);
+		this.compass.setOnClickListener(this);
 		this.upcomingPrayer = (TextView) rootView.findViewById(R.id.mainUpcomingPrayer);
 		this.upcomingTime = (TextView) rootView.findViewById(R.id.mainUpcomingTimeLeft);
 		
@@ -96,8 +100,8 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	private void calculatePrayerTimes() {
 		GPSTracker gpsTracker = new GPSTracker(getActivity());
 		if(gpsTracker.canGetLocation()) {
-			double latitude = gpsTracker.getLatitude(); //-7.952280;
-	        double longitude = gpsTracker.getLongitude(); //112.608851;
+			latitude = gpsTracker.getLatitude(); //-7.952280;
+	        longitude = gpsTracker.getLongitude(); //112.608851;
 	        
 	        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault());
 	        SimpleDateFormat sdfTz = new SimpleDateFormat("Z", Locale.getDefault());
@@ -235,5 +239,16 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	public void onLocationLoaded(String location) {
 		if(location.trim().equals("")) location = "--";
 		this.cityName.setText(location);
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()) {
+		case R.id.mainCompass:
+			QiblaDirectionFragment qiblaDirectionFragment = new QiblaDirectionFragment();
+			qiblaDirectionFragment.setQibla(this.qibla);
+			qiblaDirectionFragment.show(getFragmentManager(), "qiblaFragment");
+			break;
+		}
 	}
 }

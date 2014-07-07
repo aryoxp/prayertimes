@@ -1,53 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/aboutScrollContainer"
+    android:scrollbars="none"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="40dp" >
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/moonstar"
-        tools:ignore="ContentDescription" />
-
-    <TextView
-        android:id="@+id/aboutText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="sans-serif-light"
-        android:gravity="center"
-        android:text="Prayer Times v1.0\n\n\u00A9 2014 - Aryo Pinandito\nPTIIK Universitas Brawijaya."
-        tools:ignore="HardcodedText,UnusedAttribute" />
+    android:layout_height="match_parent" >
 
     <LinearLayout
-        android:id="@+id/aboutSupportsContainer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="40dp"
+        android:paddingBottom="40dp" >
 
         <ImageView
-            android:layout_width="67dp"
-            android:layout_height="71dp"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:src="@drawable/logo_labmobile"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/moonstar"
             tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:layout_width="162dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_horizontal|center_vertical"
+        <TextView
+            android:id="@+id/aboutText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Prayer Times v1.0\n\n\u00A9 2014 - Aryo Pinandito\nPTIIK Universitas Brawijaya."
+            tools:ignore="HardcodedText,UnusedAttribute" />
+
+        
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Credits"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText,UnusedAttribute" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Ravi Tamada\nhttp://www.androidhive.info/2012/07/android-gps-location-manager-tutorial"
+            tools:ignore="HardcodedText,UnusedAttribute" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logo_ptiik"
-            tools:ignore="ContentDescription" />
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Hamid Zarrabi-Zadeh\nhttp://praytimes.org/calculation/"
+            tools:ignore="HardcodedText,UnusedAttribute" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Original Java code by Hussain Ali Khan\nhttp://praytimes.org/code"
+            tools:ignore="HardcodedText,UnusedAttribute" /><LinearLayout
+            android:id="@+id/aboutSupportsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo_ptiik"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:src="@drawable/logo_labmobile"
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

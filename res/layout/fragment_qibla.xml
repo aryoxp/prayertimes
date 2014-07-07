@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="40dp" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:text="Qibla Direction"
+        android:textSize="27sp"
+        tools:ignore="HardcodedText,UnusedAttribute" />
+
+    <ap.mobile.prayertimes.views.Compass 
+        android:id="@+id/qiblaCompass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+    </ap.mobile.prayertimes.views.Compass>
+    
+    <TextView
+        android:id="@+id/aboutText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:text="Rotate your device until the red compass needle facing toward the north. Qiblah direction indicated by the orange needle"
+        tools:ignore="HardcodedText,UnusedAttribute" />
+
+
+
+</LinearLayout>
