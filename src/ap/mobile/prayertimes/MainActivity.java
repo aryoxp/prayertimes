@@ -14,7 +14,7 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		if (savedInstanceState == null) {
-			MainFragment mainFragment = new MainFragment(this);
+			MainFragment mainFragment = new MainFragment();
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.container, mainFragment).commit();
 		}

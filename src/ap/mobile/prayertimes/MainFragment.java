@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import android.support.v4.app.Fragment;
-import android.content.Context;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -25,17 +25,18 @@ import ap.mobile.prayertimes.adapters.PrayerTimesAdapter;
 import ap.mobile.prayertimes.base.Prayer;
 import ap.mobile.prayertimes.base.UserLocation;
 import ap.mobile.prayertimes.interfaces.CalculatePrayerTimesInterface;
+import ap.mobile.prayertimes.interfaces.LocationInterface;
 import ap.mobile.prayertimes.tasks.CalculatePrayerTimesTask;
+import ap.mobile.prayertimes.tasks.LocationTask;
 import ap.mobile.prayertimes.utilities.DateHijri;
 import ap.mobile.prayertimes.utilities.GPSTracker;
-import ap.mobile.prayertimes.utilities.LocationHelper;
 import ap.mobile.prayertimes.utilities.Qibla;
 import ap.mobile.prayertimes.views.Compass;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainFragment extends Fragment implements CalculatePrayerTimesInterface, SensorEventListener {
+public class MainFragment extends Fragment implements CalculatePrayerTimesInterface, LocationInterface, SensorEventListener {
 
 	CalculatePrayerTimesTask calculatePrayerTimesTask;
 	ListView prayerTimesListView;
@@ -45,8 +46,10 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	TextView upcomingPrayer;
 	TextView upcomingTime;
 	
+	Calendar calendar = Calendar.getInstance(Locale.US);
 	Compass compass;
 	SensorManager sensorManager;
+	
 	private Sensor sensorMagneticField;
 	private Sensor sensorAccelerometer;
 	private float[] sensorMagneticValues = new float[3];
@@ -62,8 +65,10 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	
 	SharedPreferences prefs;
 	
-	public MainFragment(Context context) {
-		this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		this.prefs = PreferenceManager.getDefaultSharedPreferences(activity);
 		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
 	}
 
@@ -94,7 +99,6 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			double latitude = gpsTracker.getLatitude(); //-7.952280;
 	        double longitude = gpsTracker.getLongitude(); //112.608851;
 	        
-	        Calendar calendar = Calendar.getInstance(Locale.US);
 	        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault());
 	        SimpleDateFormat sdfTz = new SimpleDateFormat("Z", Locale.getDefault());
 	        
@@ -103,8 +107,12 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	        this.calendarGregorian.setText(sdf.format(calendar.getTime()));
 	        this.calendarHijr.setText(DateHijri.convert(calendar));
 	        
-	        this.cityName.setText(LocationHelper.getLocation(getActivity(), latitude, longitude));
+	        LocationTask locationTask = new LocationTask(getActivity(), latitude, longitude, this);
+	        locationTask.execute();
+	        this.cityName.setText("Loading...");
 	        
+	        if(this.prefs == null)
+	        	this.prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 			UserLocation userLocation = new UserLocation(latitude, longitude, timezone);
 			this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
 			this.calculatePrayerTimesTask.execute(userLocation);
@@ -141,7 +149,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	@Override
 	public void onCalculateComplete(ArrayList<Prayer> prayerTimes) {
 		this.prayerTimes = prayerTimes;
-		PrayerTimesAdapter adapter = new PrayerTimesAdapter(getActivity(), prayerTimes);
+		PrayerTimesAdapter adapter = new PrayerTimesAdapter(getActivity(), prayerTimes, calendar);
 		this.prayerTimesListView.setAdapter(adapter);
 		this.handler.post(upcomingPrayerRunnable);
 	}
@@ -163,11 +171,18 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			Prayer nextPrayer = new Prayer();
 			
 			if(prayerTimes != null && prayerTimes.size() > 0) {
+				int position = 0;
 				for(Prayer p:prayerTimes) {
 					if(time < p.getTime()) {
+						if(position == 4)
+						{
+							nextPrayer = prayerTimes.get(5);
+							break;
+						}
 						nextPrayer = p;
 						break;
 					}
+					position++;
 				}
 			}
 			
@@ -214,5 +229,11 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		   this.north = Math.toDegrees(matrixValues[0]);
 		   this.compass.update(this.qibla, this.north);
 		}
+	}
+
+	@Override
+	public void onLocationLoaded(String location) {
+		if(location.trim().equals("")) location = "--";
+		this.cityName.setText(location);
 	}
 }
