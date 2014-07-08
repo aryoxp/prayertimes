@@ -35,8 +35,8 @@ public class AboutFragment extends DialogFragment {
 		super.onStart();
 		LayoutParams lp = getDialog().getWindow().getAttributes();
 		DisplayMetrics dm = getResources().getDisplayMetrics();
-		lp.width = (int) (dm.widthPixels * 0.9);
-		lp.height = (int) (dm.heightPixels * 0.8);
+		lp.width = (int) (dm.widthPixels * 0.95);
+		lp.height = (int) (dm.heightPixels * 0.9);
 		getDialog().getWindow().setAttributes(lp);
 	}
 

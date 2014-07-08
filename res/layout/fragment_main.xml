@@ -7,19 +7,19 @@
 
     <LinearLayout
         android:id="@+id/mainHeaderInfoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_marginTop="@dimen/activity_vertical_margin" >
 
         <LinearLayout
             android:id="@+id/mainInfoContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="center_vertical"
+            android:layout_weight="1"
             android:orientation="vertical" >
 
             <TextView
@@ -27,9 +27,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:text="Pangkalanbun"
-                android:textSize="28sp"
+                android:text="User Location"
                 android:textColor="@color/textDefault"
+                android:textSize="28sp"
                 tools:ignore="HardcodedText,UnusedAttribute" />
 
             <TextView
@@ -38,8 +38,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:text="14 September 2014"
-                android:textSize="12sp"
                 android:textColor="@color/gray"
+                android:textSize="12sp"
                 tools:ignore="HardcodedText,UnusedAttribute" />
 
             <TextView
@@ -48,8 +48,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:text="1 Muharram 1488"
-                android:textSize="12sp"
                 android:textColor="@color/gray"
+                android:textSize="12sp"
                 tools:ignore="HardcodedText,UnusedAttribute" />
         </LinearLayout>
 
@@ -57,53 +57,70 @@
             android:id="@+id/mainCompass"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_gravity="center_vertical"
-            />
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
 
     <ListView
         android:id="@+id/mainPrayerTimesList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" >
+        android:layout_weight="1" >
     </ListView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:background="#efefef"
-        android:orientation="vertical"
-        >
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin" >
 
         <TextView
-            android:id="@+id/mainUpcomingPrayer"
-            android:layout_width="wrap_content"
+            android:id="@+id/mainClock"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
             android:fontFamily="sans-serif-condensed"
-            android:text="Ashar"
-            android:textSize="27sp"
-            android:textColor="@color/textDefault"
+            android:text="00:00"
+            android:textColor="@color/silver"
+            android:textSize="36sp"
             tools:ignore="HardcodedText,UnusedAttribute" />
 
-        <TextView
-            android:id="@+id/mainUpcomingTimeLeft"
+        <LinearLayout
+            android:id="@+id/nextPrayerContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-light"
             android:layout_gravity="right"
-            android:text="1 hour 23 min"
-            android:textSize="13sp"
-            android:textColor="@color/gray"
-            tools:ignore="HardcodedText,UnusedAttribute" />
+            android:orientation="vertical" >
 
+            <TextView
+                android:id="@+id/mainUpcomingPrayer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:fontFamily="sans-serif-condensed"
+                android:text="Ashar"
+                android:textColor="@color/textDefault"
+                android:textSize="27sp"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+
+            <TextView
+                android:id="@+id/mainUpcomingTimeLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:fontFamily="sans-serif-light"
+                android:text="1 hour 23 min"
+                android:textColor="@color/gray"
+                android:textSize="13sp"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

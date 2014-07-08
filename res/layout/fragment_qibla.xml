@@ -32,7 +32,7 @@
         android:layout_marginTop="10dp"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
-        android:text="Rotate your device until the red compass needle facing toward the north. Qiblah direction indicated by the orange needle"
+        android:text="The Qibla direction is calculated based on your location and is shown by the orange needle"
         tools:ignore="HardcodedText,UnusedAttribute" />
 
 

@@ -4,6 +4,7 @@
 PrayTime.java: Prayer Times Calculator (ver 1.0)
 Copyright (C) 2007-2010 PrayTimes.org
 
+Modified Java Code for Android by: Aryo Pinandito
 Java Code By: Hussain Ali Khan
 Original JS Code By: Hamid Zarrabi-Zadeh
 
@@ -120,7 +121,7 @@ public class PrayTime {
 		// Time Names
         timeNames = new ArrayList<String>();
         timeNames.add("Subuh");
-        timeNames.add("Syuruk");
+        timeNames.add("Sunrise");
         timeNames.add("Dzuhur");
         timeNames.add("Ashar");
         timeNames.add("Sunset");

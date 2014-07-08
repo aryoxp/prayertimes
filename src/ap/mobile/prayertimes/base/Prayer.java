@@ -119,8 +119,8 @@ public class Prayer {
     	int minutes = (int) Math.ceil((time-hours) * 60);
     	String timeLeft = "";
     	if(hours > 0)
-    		timeLeft = hours + " jam " + minutes + " menit";
-    	else timeLeft = minutes + " menit";
+    		timeLeft = hours + " hour" + (hours>1?"s ":" ");
+    	timeLeft += minutes + " minute" + (minutes>1?"s":"");
     	return timeLeft;
     }
 }

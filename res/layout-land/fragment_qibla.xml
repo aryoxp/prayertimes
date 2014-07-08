@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="40dp" >
+
+    <ap.mobile.prayertimes.views.Compass
+        android:id="@+id/qiblaCompass"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:layout_weight="0.5" >
+    </ap.mobile.prayertimes.views.Compass>
+
+    <LinearLayout
+        android:id="@+id/compassContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Qibla Direction"
+            android:textSize="27sp"
+            tools:ignore="HardcodedText,UnusedAttribute" />
+
+        <TextView
+            android:id="@+id/aboutText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="left"
+            android:text="The Qibla direction is calculated based on your location and is shown by the orange needle"
+            tools:ignore="HardcodedText,UnusedAttribute" />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="left"
+            android:text="You have to put your device orientation in portrait in order to get the correct direction"
+            tools:ignore="HardcodedText,UnusedAttribute" />
+    </LinearLayout>
+
+</LinearLayout>

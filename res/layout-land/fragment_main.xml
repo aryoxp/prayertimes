@@ -72,15 +72,34 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="#efefef"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin" >
+
+        <TextView
+            android:id="@+id/mainClock"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="#efefef"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin" >
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-condensed"
+            android:text="00:00"
+            android:textColor="@color/silver"
+            android:textSize="36sp"
+            tools:ignore="HardcodedText,UnusedAttribute" />
+
+        <LinearLayout
+            android:id="@+id/nextPrayerContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/mainUpcomingPrayer"
@@ -104,6 +123,7 @@
                 android:textSize="13sp"
                 tools:ignore="HardcodedText,UnusedAttribute" />
         </LinearLayout>
+    </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

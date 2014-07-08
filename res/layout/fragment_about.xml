@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/aboutScrollContainer"
-    android:scrollbars="none"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" 
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="40dp"
+    android:paddingBottom="40dp"
+    >
+
+<ScrollView
+    android:id="@+id/aboutScrollContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none"
+    tools:ignore="UselessParent" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="40dp"
-        android:paddingBottom="40dp" >
+        >
 
         <ImageView
             android:layout_width="76dp"
@@ -29,7 +36,7 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="Prayer Times v1.0\n\n\u00A9 2014 - Aryo Pinandito\nPTIIK Universitas Brawijaya."
+            android:text="Prayer Times v1.0\n\n\u00A9 2014 - Aryo Pinandito\nMobile Application Development Laboratory\nPTIIK Brawijaya University\nhttp://ptiik.ub.ac.id"
             tools:ignore="HardcodedText,UnusedAttribute" />
 
         
@@ -51,7 +58,7 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="Ravi Tamada\nhttp://www.androidhive.info/2012/07/android-gps-location-manager-tutorial"
+            android:text="User geolocation script based on script by Ravi Tamada\nhttp://www.androidhive.info"
             tools:ignore="HardcodedText,UnusedAttribute" />
 
         <TextView
@@ -61,7 +68,7 @@
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="Hamid Zarrabi-Zadeh\nhttp://praytimes.org/calculation/"
+            android:text="Prayer times calculation algorithm and Java code based on Hamid Zarrabi-Zadeh and Hussain Ali Khan\nhttp://praytimes.org"
             tools:ignore="HardcodedText,UnusedAttribute" />
 
         <TextView
@@ -71,7 +78,7 @@
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="Original Java code by Hussain Ali Khan\nhttp://praytimes.org/code"
+            android:text="Qibla direction algorithm implementation is derived by Dr. Kamal Abdali\nhttp://www.geomete.com/abdali"
             tools:ignore="HardcodedText,UnusedAttribute" /><LinearLayout
             android:id="@+id/aboutSupportsContainer"
             android:layout_width="match_parent"
@@ -99,3 +106,4 @@
     </LinearLayout>
 
 </ScrollView>
+</FrameLayout>

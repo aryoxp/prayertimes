@@ -46,6 +46,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	TextView calendarHijr;
 	TextView upcomingPrayer;
 	TextView upcomingTime;
+	TextView clock;
 	
 	Calendar calendar = Calendar.getInstance(Locale.US);
 	Compass compass;
@@ -87,7 +88,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		this.compass.setOnClickListener(this);
 		this.upcomingPrayer = (TextView) rootView.findViewById(R.id.mainUpcomingPrayer);
 		this.upcomingTime = (TextView) rootView.findViewById(R.id.mainUpcomingTimeLeft);
-		
+		this.clock = (TextView) rootView.findViewById(R.id.mainClock);
 		this.sensorManager = (SensorManager) this.getActivity().getSystemService(MainActivity.SENSOR_SERVICE);
 		this.sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		this.sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -135,8 +136,8 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	@Override
 	public void onResume() {
 		this.calculatePrayerTimes();
-		sensorManager.registerListener(this, sensorMagneticField, SensorManager.SENSOR_DELAY_NORMAL);
-		sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+		this.sensorManager.registerListener(this, sensorMagneticField, SensorManager.SENSOR_DELAY_NORMAL);
+		this.sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		if(this.prayerTimes != null && this.prayerTimes.size() > 0)
 		this.handler.post(upcomingPrayerRunnable);
 		super.onResume();
@@ -144,10 +145,10 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	 
 	 @Override
 	public void onPause() {
-	  sensorManager.unregisterListener(this, sensorMagneticField);
-	  sensorManager.unregisterListener(this, sensorAccelerometer);
-	  handler.removeCallbacks(upcomingPrayerRunnable);
-	  super.onPause();
+		this.sensorManager.unregisterListener(this, sensorMagneticField);
+		this.sensorManager.unregisterListener(this, sensorAccelerometer);
+		this.handler.removeCallbacks(upcomingPrayerRunnable);
+		super.onPause();
 	}
 
 	@Override
@@ -168,7 +169,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	private Runnable upcomingPrayerRunnable = new Runnable() {		
 		@Override
 		public void run() {
-			Calendar calendar = Calendar.getInstance(Locale.getDefault());
+			calendar = Calendar.getInstance(Locale.getDefault());
 			int hours = calendar.get(Calendar.HOUR_OF_DAY);
 			int minutes = calendar.get(Calendar.MINUTE);
 			double time = hours + minutes/60d;
@@ -200,25 +201,37 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			upcomingPrayer.setText(nextPrayer.getName());
 			upcomingTime.setText(Prayer.friendlyTime(timeLeft));
 			
+			try {
+				int hour = calendar.get(Calendar.HOUR);
+				if(clock !=null)
+					clock.setText(
+						(hour==0?12:hour) 
+						+ ":" + String.format("%02d",calendar.get(Calendar.MINUTE)) 
+						+ " " 
+						+ (calendar.get(Calendar.AM_PM) == 0?"AM":"PM")
+						);
+			} catch(Exception ex) {}
+			
 			handler.postDelayed(this, 500);
 		}
 	};
 	
-	private double millis = 0;
+	
+	//private double millis = 0;
 	
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		
-		if( System.currentTimeMillis() - this.millis < 100)
-			return;
-		else this.millis = System.currentTimeMillis();
+		//if( System.currentTimeMillis() - this.millis < 100)
+		//	return;
+		//else this.millis = System.currentTimeMillis();
 		
 		switch(event.sensor.getType()){
 		case Sensor.TYPE_MAGNETIC_FIELD:
-			this.sensorMagneticValues = event.values.clone();
+			this.sensorMagneticValues = this.lowPass(event.values.clone(), this.sensorMagneticValues);
 			break;
 		case Sensor.TYPE_ACCELEROMETER:
-			this.sensorAccelerometerValues = event.values.clone();
+			this.sensorAccelerometerValues = this.lowPass(event.values.clone(), this.sensorAccelerometerValues);
 			break;
 		}
 		
@@ -250,5 +263,26 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			qiblaDirectionFragment.show(getFragmentManager(), "qiblaFragment");
 			break;
 		}
+	}
+	
+
+	/*
+	 * time smoothing constant for low-pass filter
+	 * 0 ≤ alpha ≤ 1 ; a smaller value basically means more smoothing
+	 * See: http://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization
+	 */
+	static final float ALPHA = 0.1f;
+	 
+	/**
+	 * @see http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation
+	 * @see http://developer.android.com/reference/android/hardware/SensorEvent.html#values
+	 */
+	protected float[] lowPass( float[] input, float[] output ) {
+	    if ( output == null ) return input;
+	     
+	    for ( int i=0; i<input.length; i++ ) {
+	        output[i] = output[i] + ALPHA * (input[i] - output[i]);
+	    }
+	    return output;
 	}
 }
