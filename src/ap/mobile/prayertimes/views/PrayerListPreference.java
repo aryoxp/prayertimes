@@ -1,6 +1,7 @@
 package ap.mobile.prayertimes.views;
 
 import java.util.ArrayList;
+
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,22 +26,29 @@ public class PrayerListPreference extends ListPreference {
 
 	@Override
 	protected void onPrepareDialogBuilder(Builder builder) {
+		if(this.getEntries() == null)
+			builder = null;
+		try {
 
-		int index = this.findIndexOfValue(this.getSharedPreferences().getString(getKey(), "0"));
-		
-		CharSequence[] entries = this.getEntries();
-		CharSequence[] values = this.getEntryValues();
-		ArrayList<PrayerPreference> prayerPreferenceList = new ArrayList<PrayerPreference>();
-
-		int i = 0;
-		for(CharSequence s:entries) {
-			prayerPreferenceList.add(new PrayerPreference(s, values[i]));
-			i++;
+			int index = this.findIndexOfValue(this.getSharedPreferences().getString(getKey(), "0"));
+			
+			CharSequence[] entries = this.getEntries();
+			CharSequence[] values = this.getEntryValues();
+			
+			ArrayList<PrayerPreference> prayerPreferenceList = new ArrayList<PrayerPreference>();
+			int i = 0;
+			for(CharSequence s:entries) {
+				prayerPreferenceList.add(new PrayerPreference(s, values[i]));
+				i++;
+			}
+			
+			PrayerPreferenceAdapter adapter = new PrayerPreferenceAdapter(this.context, prayerPreferenceList, index);
+			builder.setAdapter(adapter, this);
+			super.onPrepareDialogBuilder(builder);
+			
+		} catch(Exception ex) {
+			
 		}
-		
-		PrayerPreferenceAdapter adapter = new PrayerPreferenceAdapter(this.context, prayerPreferenceList, index);
-		builder.setAdapter(adapter, this);
-		super.onPrepareDialogBuilder(builder);
 		
 	}
 	

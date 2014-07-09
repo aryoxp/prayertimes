@@ -25,16 +25,6 @@
                 />
         
         <ap.mobile.prayertimes.views.PrayerListPreference
-                android:key="timeFormatPreference"
-                android:title="Time Format Display"
-                android:summary="Format used to display prayer times"
-                android:dialogTitle="Set Time Format"
-                android:entries="@array/timeFormat"
-                android:entryValues="@array/timeFormatValues"
-                android:defaultValue="1"
-                />
-        
-        <ap.mobile.prayertimes.views.PrayerListPreference
                 android:key="adjustHighLatsPreference"
                 android:title="High Latitudes Adjustment"
                 android:summary="Adjusting methods for higher latitudes"
@@ -44,5 +34,35 @@
                 android:defaultValue="3"
                 />
     </PreferenceCategory>
-
+    
+    <PreferenceCategory
+            android:title="Date and Time">
+        
+        <ap.mobile.prayertimes.views.PrayerListPreference
+                android:key="timeFormatPreference"
+                android:title="Time Format Display"
+                android:summary="Format used to display prayer times"
+                android:dialogTitle="Set Time Format"
+                android:entries="@array/timeFormat"
+                android:entryValues="@array/timeFormatValues"
+                android:defaultValue="1"
+                />
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="Location Settings">
+    	<ap.mobile.prayertimes.views.PrayerListPreference
+                android:key="locationModePreference"
+                android:title="Set Location Mode"
+                android:summary="Method used to determine device location"
+                android:dialogTitle="Set Location Mode"
+                android:entries="@array/locationMode"
+                android:entryValues="@array/locationModeValues"
+                android:defaultValue="0"
+                />
+    	<Preference
+                android:key="locationPreference"
+                android:title="Set Location"
+                android:summary="Set your location manually"
+                />
+	</PreferenceCategory>
 </PreferenceScreen>

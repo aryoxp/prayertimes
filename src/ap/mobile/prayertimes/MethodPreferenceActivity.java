@@ -1,9 +1,9 @@
 package ap.mobile.prayertimes;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
-public class MethodPreferenceActivity extends ActionBarActivity {
+public class MethodPreferenceActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

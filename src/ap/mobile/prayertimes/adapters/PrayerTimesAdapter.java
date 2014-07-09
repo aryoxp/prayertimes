@@ -5,6 +5,7 @@ import java.util.Calendar;
 
 import android.app.Service;
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,14 @@ public class PrayerTimesAdapter extends BaseAdapter {
 	private Context context;
 	private ArrayList<Prayer> prayerTimes;
 	private double now;
+	private int displayFormat;
 	
 	public PrayerTimesAdapter(Context context, ArrayList<Prayer> prayerTimes, Calendar calendar) {
 		this.context = context;
 		this.prayerTimes = prayerTimes;
+		this.displayFormat = Integer.parseInt(
+				PreferenceManager.getDefaultSharedPreferences(context)
+				.getString("timeFormatPreference",String.valueOf(Prayer.FORMAT_12)));
 		now = calendar.get(Calendar.HOUR_OF_DAY);
 		now += calendar.get(Calendar.MINUTE)/60;
 	}
@@ -84,10 +89,8 @@ public class PrayerTimesAdapter extends BaseAdapter {
 			vh.container.setBackgroundColor(this.context.getResources().getColor(R.color.lime));
 		
 		vh.prayerNameText.setText(p.getName());
-		vh.prayerTimeText.setText(p.toString(Prayer.FORMAT_12));
-		
-		
-		
+		vh.prayerTimeText.setText(p.toString(this.displayFormat));
+
 		return convertView;
 	}
 

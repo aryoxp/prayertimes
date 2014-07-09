@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import android.support.v4.app.Fragment;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -30,6 +31,7 @@ import ap.mobile.prayertimes.interfaces.LocationInterface;
 import ap.mobile.prayertimes.tasks.CalculatePrayerTimesTask;
 import ap.mobile.prayertimes.tasks.LocationTask;
 import ap.mobile.prayertimes.utilities.DateHijri;
+import ap.mobile.prayertimes.utilities.Filter;
 import ap.mobile.prayertimes.utilities.GPSTracker;
 import ap.mobile.prayertimes.utilities.Qibla;
 import ap.mobile.prayertimes.views.Compass;
@@ -68,11 +70,15 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	double latitude, longitude;
 	
 	SharedPreferences prefs;
+	private int displayFormat;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+		this.displayFormat = 
+				Integer.parseInt(
+						this.prefs.getString("timeFormatPreference", String.valueOf(Prayer.FORMAT_12)));
 		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
 	}
 
@@ -93,44 +99,56 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		this.sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		this.sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		
-		//calculatePrayerTimes();
+		this.cityName.setOnClickListener(this);
         	
 		return rootView;
 	}
 
 	private void calculatePrayerTimes() {
-		GPSTracker gpsTracker = new GPSTracker(getActivity());
-		if(gpsTracker.canGetLocation()) {
-			latitude = gpsTracker.getLatitude(); //-7.952280;
-	        longitude = gpsTracker.getLongitude(); //112.608851;
-	        
-	        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault());
-	        SimpleDateFormat sdfTz = new SimpleDateFormat("Z", Locale.getDefault());
-	        
-	        double timezone = Math.floor(Double.parseDouble(sdfTz.format(calendar.getTime()))/100);
-	        
-	        this.calendarGregorian.setText(sdf.format(calendar.getTime()));
-	        this.calendarHijr.setText(DateHijri.convert(calendar));
-	        
-	        LocationTask locationTask = new LocationTask(getActivity(), latitude, longitude, this);
-	        locationTask.execute();
-	        this.cityName.setText("Loading...");
-	        
-	        if(this.prefs == null)
-	        	this.prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-			UserLocation userLocation = new UserLocation(latitude, longitude, timezone);
-			this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
-			this.calculatePrayerTimesTask.execute(userLocation);
+		
+		this.displayFormat = 
+				Integer.parseInt(
+						this.prefs.getString("timeFormatPreference", String.valueOf(Prayer.FORMAT_12)));
+		
+		this.latitude = Double.valueOf(this.prefs.getString("latitude", "0"));
+		this.longitude = Double.valueOf(this.prefs.getString("longitude", "0"));
+		
+		if(this.latitude == 0 && this.longitude == 0) {
+		
+			GPSTracker gpsTracker = new GPSTracker(getActivity());
+			if(gpsTracker.canGetLocation()) {
+				this.latitude = gpsTracker.getLatitude(); //-7.952280;
+		        this.longitude = gpsTracker.getLongitude(); //112.608851;
+			} else {
+				gpsTracker.showSettingsAlert();
+			}
 			
-			try {
-				this.qibla = Qibla.calculate(latitude, longitude);
-				Log.d("prayer", "Lat: " + latitude + ", Lng: " + longitude + ", Qibla: " + qibla);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}		
-		} else {
-			gpsTracker.showSettingsAlert();
 		}
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault());
+        SimpleDateFormat sdfTz = new SimpleDateFormat("Z", Locale.getDefault());
+        
+        double timezone = Math.floor(Double.parseDouble(sdfTz.format(calendar.getTime()))/100);
+        
+        this.calendarGregorian.setText(sdf.format(calendar.getTime()));
+        this.calendarHijr.setText(DateHijri.convert(calendar));
+        
+        LocationTask locationTask = new LocationTask(getActivity(), latitude, longitude, this);
+        locationTask.execute();
+        this.cityName.setText("Loading...");
+        
+        if(this.prefs == null)
+        	this.prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		UserLocation userLocation = new UserLocation(latitude, longitude, timezone);
+		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
+		this.calculatePrayerTimesTask.execute(userLocation);
+		
+		try {
+			this.qibla = Qibla.calculate(latitude, longitude);
+			Log.d("prayer", "Lat: " + latitude + ", Lng: " + longitude + ", Qibla: " + qibla);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	@Override
@@ -171,6 +189,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		public void run() {
 			calendar = Calendar.getInstance(Locale.getDefault());
 			int hours = calendar.get(Calendar.HOUR_OF_DAY);
+			int hour = calendar.get(Calendar.HOUR);
 			int minutes = calendar.get(Calendar.MINUTE);
 			double time = hours + minutes/60d;
 			Prayer nextPrayer = new Prayer();
@@ -202,14 +221,24 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			upcomingTime.setText(Prayer.friendlyTime(timeLeft));
 			
 			try {
-				int hour = calendar.get(Calendar.HOUR);
-				if(clock !=null)
-					clock.setText(
-						(hour==0?12:hour) 
-						+ ":" + String.format("%02d",calendar.get(Calendar.MINUTE)) 
-						+ " " 
-						+ (calendar.get(Calendar.AM_PM) == 0?"AM":"PM")
-						);
+				hour = (hour==0?12:hour);
+				if(clock !=null) {
+					String clockText = "";
+					switch(displayFormat) {
+						case Prayer.FORMAT_12:
+						case Prayer.FORMAT_12NS:
+							clockText += String.format("%d:%02d", hour, minutes);
+							if(displayFormat == Prayer.FORMAT_12)
+								clockText += " " + (calendar.get(Calendar.AM_PM) == 0?"AM":"PM");
+							break;
+						case Prayer.FORMAT_24:
+							clockText += String.format("%02d:%02d", hours, minutes);
+							break;
+					}
+					
+					clock.setText(clockText);
+					
+				}
 			} catch(Exception ex) {}
 			
 			handler.postDelayed(this, 500);
@@ -228,10 +257,10 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		
 		switch(event.sensor.getType()){
 		case Sensor.TYPE_MAGNETIC_FIELD:
-			this.sensorMagneticValues = this.lowPass(event.values.clone(), this.sensorMagneticValues);
+			this.sensorMagneticValues = Filter.lowPass(event.values.clone(), this.sensorMagneticValues);
 			break;
 		case Sensor.TYPE_ACCELEROMETER:
-			this.sensorAccelerometerValues = this.lowPass(event.values.clone(), this.sensorAccelerometerValues);
+			this.sensorAccelerometerValues = Filter.lowPass(event.values.clone(), this.sensorAccelerometerValues);
 			break;
 		}
 		
@@ -250,7 +279,12 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 
 	@Override
 	public void onLocationLoaded(String location) {
-		if(location.trim().equals("")) location = "--";
+		try {
+			if(location.trim().equals("")) 
+				location = "Unknown Location";
+		} catch(Exception ex) {
+			location = "Unknown Location";
+		}
 		this.cityName.setText(location);
 	}
 
@@ -262,27 +296,11 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			qiblaDirectionFragment.setQibla(this.qibla);
 			qiblaDirectionFragment.show(getFragmentManager(), "qiblaFragment");
 			break;
+		case R.id.mainCityNameText:
+			Intent i = new Intent(getActivity(), MapsActivity.class);
+			this.startActivity(i);
+			break;
 		}
 	}
 	
-
-	/*
-	 * time smoothing constant for low-pass filter
-	 * 0 ≤ alpha ≤ 1 ; a smaller value basically means more smoothing
-	 * See: http://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization
-	 */
-	static final float ALPHA = 0.1f;
-	 
-	/**
-	 * @see http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation
-	 * @see http://developer.android.com/reference/android/hardware/SensorEvent.html#values
-	 */
-	protected float[] lowPass( float[] input, float[] output ) {
-	    if ( output == null ) return input;
-	     
-	    for ( int i=0; i<input.length; i++ ) {
-	        output[i] = output[i] + ALPHA * (input[i] - output[i]);
-	    }
-	    return output;
-	}
 }
