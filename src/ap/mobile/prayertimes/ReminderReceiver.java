@@ -58,7 +58,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 		    
 			NotificationCompat.Builder mBuilder =
 			        new NotificationCompat.Builder(context)
-			        .setSmallIcon(R.drawable.moonstar)
+			        .setSmallIcon(R.drawable.ic_moonstar)
 			        .setContentTitle("Prayer Time Reminder")
 			        .setContentIntent(appPendingIntent)
 			        .setContentText(prayerTime + " The time for " + prayerName + " prayer is due now.");

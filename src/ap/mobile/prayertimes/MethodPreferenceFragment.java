@@ -122,14 +122,14 @@ public class MethodPreferenceFragment extends PreferenceFragment
 			//boolean alarmUp = (PendingIntent.getBroadcast(getActivity().getApplicationContext(), 
 			//		p.getId(), intent, PendingIntent.FLAG_NO_CREATE) != null);
 			
-			AlarmManager alarmManager = (AlarmManager) this.getActivity()
+			AlarmManager alarmManager = (AlarmManager) this.context
 			        .getSystemService(Context.ALARM_SERVICE);
 			this.reminderEnabled = this.prefs.getBoolean("reminderEnabledPreference", false);
 			if(this.reminderEnabled) {				
-				PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getActivity().getApplicationContext(), 
+				PendingIntent pendingIntent = PendingIntent.getBroadcast(this.context.getApplicationContext(), 
 						p.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 				Calendar cal = p.getAlarmCalendar();
-				Log.d(this.getActivity().getPackageName(), 
+				Log.d(this.context.getPackageName(), 
 						"Alarm set for " + p.getName() + " on " + cal.get(Calendar.HOUR) + ":" + cal.get(Calendar.MINUTE) );
 				alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, p.getAlarmCalendar().getTimeInMillis(),
 				        AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -137,7 +137,7 @@ public class MethodPreferenceFragment extends PreferenceFragment
 			} else {
 				int i = 0;
 				for(Intent in : this.alarmIntent) {
-					PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getActivity().getApplicationContext(), 
+					PendingIntent pendingIntent = PendingIntent.getBroadcast(this.context.getApplicationContext(), 
 							p.getId(), in, PendingIntent.FLAG_NO_CREATE);
 					alarmManager.cancel(pendingIntent);
 					Log.d("alarm clear", p.getName());
@@ -146,9 +146,9 @@ public class MethodPreferenceFragment extends PreferenceFragment
 			}
 		}
 		if(this.reminderEnabled)
-			Toast.makeText(getActivity(), "Prayer times reminder activated", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this.context, "Prayer times reminder activated", Toast.LENGTH_SHORT).show();
 		else
-			Toast.makeText(getActivity(), "Prayer times reminder inactive", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this.context, "Prayer times reminder inactive", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

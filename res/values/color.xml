@@ -11,10 +11,12 @@
  <color name="maroon">#800000</color>
  <color name="aqua">#00FFFF</color>
  <color name="lime">#d7df21</color>
+ <color name="lightlime">#77d7df21</color>
  <color name="darkLime">#b0b91b</color>
  <color name="teal">#008080</color>
  <color name="green">#008000</color>
  <color name="blue">#0000FF</color>
  <color name="navy">#000080</color>
  <color name="black">#000000</color>
+ <color name="white">#ffffff</color>
 </resources>

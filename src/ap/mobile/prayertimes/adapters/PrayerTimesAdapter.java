@@ -66,8 +66,15 @@ public class PrayerTimesAdapter extends BaseAdapter {
 		
 		Prayer p = this.prayerTimes.get(position);		
 		ViewHolder vh = (ViewHolder) convertView.getTag();
-		if(p.isNext())
+		if(p.isNext()) {
+			final float scale = this.context.getResources().getDisplayMetrics().density;
+			float pixels = 1 * scale + 0.5f;
 			vh.container.setBackgroundColor(this.context.getResources().getColor(R.color.lime));
+			vh.prayerNameText.setTextColor(this.context.getResources().getColor(R.color.white));
+			vh.prayerTimeText.setTextColor(this.context.getResources().getColor(R.color.white));
+			vh.prayerNameText.setShadowLayer(1f, 0f, -pixels, this.context.getResources().getColor(R.color.darkLime));
+			vh.prayerTimeText.setShadowLayer(1f, 0f, -pixels, this.context.getResources().getColor(R.color.darkLime));
+		}
 		vh.prayerNameText.setText(p.getName());
 		vh.prayerTimeText.setText(p.toString(this.displayFormat));
 

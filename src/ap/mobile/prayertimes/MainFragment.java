@@ -28,6 +28,7 @@ import android.widget.TextView;
 import ap.mobile.prayertimes.adapters.PrayerTimesAdapter;
 import ap.mobile.prayertimes.base.Prayer;
 import ap.mobile.prayertimes.base.UserLocation;
+import ap.mobile.prayertimes.helpers.CalendarHelper;
 import ap.mobile.prayertimes.helpers.ReminderHelper;
 import ap.mobile.prayertimes.interfaces.CalculatePrayerTimesInterface;
 import ap.mobile.prayertimes.interfaces.LocationInterface;
@@ -53,7 +54,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	TextView upcomingTime;
 	TextView clock;
 	
-	Calendar calendar = Calendar.getInstance(Locale.US);
+	Calendar calendar = Calendar.getInstance(Locale.getDefault());
 	Compass compass;
 	SensorManager sensorManager;
 	
@@ -74,7 +75,6 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	
 	private SharedPreferences prefs;
 	private int displayFormat;
-	private boolean reminderEnabled;
 	private ImageView alarmIndicator;
 	private PrayerTimesAdapter adapter;
 	private int timezone;
@@ -110,7 +110,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		this.sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		this.mainPrayerTimesProgress = (ProgressBar) rootView.findViewById(R.id.mainPrayerTimesProgress);
 		this.alarmIndicator = (ImageView) rootView.findViewById(R.id.mainAlarmIndicator);
-		this.reminderEnabled = this.prefs.getBoolean("reminderEnabledPreference", false);
+		this.prefs.getBoolean("reminderEnabledPreference", false);
 		this.cityName.setOnClickListener(this); 	
 		return rootView;
 	}
@@ -177,19 +177,17 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		this.sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		if(this.prayerTimes != null && this.prayerTimes.size() > 0)
 		this.handler.post(upcomingPrayerRunnable);
-		
+		boolean enabled = this.prefs.getBoolean("reminderEnabledPreference", false);
 		if(this.alarmIndicator != null) {
-			if(!this.reminderEnabled)
+			if(!enabled)
 				this.alarmIndicator.setVisibility(View.INVISIBLE);
 			else this.alarmIndicator.setVisibility(View.VISIBLE);
 		}
-		
-        if (prefs.getBoolean("firstrun", true)) {
-        	boolean enabled = this.prefs.getBoolean("reminderEnabledPreference", false);
+        
+        if(!prefs.getString("alarmDmy", "00000000").equals(CalendarHelper.getDayMonthYearString(this.calendar))) {
         	if(enabled)
         		ReminderHelper.setReminder(this.context, enabled, null);
-        	else ReminderHelper.setReminder(this.context, false, null);
-            prefs.edit().putBoolean("firstrun", false).commit();
+        	prefs.edit().putString("alarmDmy", CalendarHelper.getDayMonthYearString(this.calendar)).commit();
         }
 	}
 	 
@@ -231,26 +229,31 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 				int position = 0;
 				
 				for(Prayer p:prayerTimes) {
-					p.setNext(false);
 					if(time < p.getTime()) {
 						if(position == 4)
 						{
 							nextPrayer = prayerTimes.get(5);
 							break;
 						}
-						nextPrayer = p;
+						nextPrayer = prayerTimes.get(position);
 						break;
 					}
 					position++;
 				}
-				nextPrayer.setNext(true);
-				for(int i = position+1; i<prayerTimes.size(); i++) 
-					prayerTimes.get(i).setNext(false);
+				for(int i = 0; i<prayerTimes.size(); i++) {
+					if(position == 4) 
+						position = 5;
+					if(i==position) prayerTimes.get(i).setNext(true);
+					else prayerTimes.get(i).setNext(false);
+					
+					
+				}
 			}
 			
 			double timeLeft = 0;
 			if(nextPrayer.getTime() == 0) {
 				nextPrayer = prayerTimes.get(0);
+				nextPrayer.setNext(true);
 				timeLeft = nextPrayer.getTime() + (24-time);
 			} else {
 				timeLeft = nextPrayer.getTime() - time;
