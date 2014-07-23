@@ -65,7 +65,8 @@ public class MapsFragment extends Fragment implements
 		this.longitude = Double.valueOf(this.prefs.getString("longitude", "0"));
 		this.latitude = Double.valueOf(this.prefs.getString("latitude", "0"));
 		
-		if(this.longitude == 0 && this.latitude == 0) {
+		if((this.longitude == 0 && this.latitude == 0) 
+				|| this.prefs.getString("locationModePreference", "0").equals("0")) {
 			GPSTracker gpsTracker = new GPSTracker(getActivity());
 			if(gpsTracker.canGetLocation()) {
 				this.latitude = gpsTracker.getLatitude();

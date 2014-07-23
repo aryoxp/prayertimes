@@ -277,6 +277,12 @@ public class PrayTime {
     	
     	for(int x=0; x<times.length; x++) {
     		Prayer p = new Prayer(this.timeNames.get(x), times[x]);
+    		if(x == 0)
+    			p.setId(Prayer.SUBUH);
+    		else if(x == 2) p.setId(Prayer.DZUHUR);
+    		else if(x == 3) p.setId(Prayer.ASHAR);
+    		else if(x == 5) p.setId(Prayer.MAGHRIB);
+    		else if(x == 6) p.setId(Prayer.ISYA);
     		this.prayerList.add(p);
     	}
         

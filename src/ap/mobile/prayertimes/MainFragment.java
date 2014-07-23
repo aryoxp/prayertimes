@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import android.support.v4.app.Fragment;
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
@@ -21,11 +21,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import ap.mobile.prayertimes.adapters.PrayerTimesAdapter;
 import ap.mobile.prayertimes.base.Prayer;
 import ap.mobile.prayertimes.base.UserLocation;
+import ap.mobile.prayertimes.helpers.ReminderHelper;
 import ap.mobile.prayertimes.interfaces.CalculatePrayerTimesInterface;
 import ap.mobile.prayertimes.interfaces.LocationInterface;
 import ap.mobile.prayertimes.tasks.CalculatePrayerTimesTask;
@@ -64,27 +67,34 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	
 	private ArrayList<Prayer> prayerTimes;
 	
-	double qibla;
-	double north;
+	private double qibla;
+	private double north;
 	
-	double latitude, longitude;
+	private double latitude, longitude;
 	
-	SharedPreferences prefs;
+	private SharedPreferences prefs;
 	private int displayFormat;
-
+	private boolean reminderEnabled;
+	private ImageView alarmIndicator;
+	private PrayerTimesAdapter adapter;
+	private int timezone;
+	private ProgressBar mainPrayerTimesProgress;
+	private Context context;
+	
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		this.prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-		this.displayFormat = 
-				Integer.parseInt(
-						this.prefs.getString("timeFormatPreference", String.valueOf(Prayer.FORMAT_12)));
-		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		this.context = getActivity();
+		setRetainInstance(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		this.prefs = PreferenceManager.getDefaultSharedPreferences(this.context);
+		this.displayFormat = 
+				Integer.parseInt(
+						this.prefs.getString("timeFormatPreference", String.valueOf(Prayer.FORMAT_12)));
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		this.prayerTimesListView = (ListView) rootView.findViewById(R.id.mainPrayerTimesList);
 		this.cityName = (TextView) rootView.findViewById(R.id.mainCityNameText);
@@ -95,12 +105,13 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		this.upcomingPrayer = (TextView) rootView.findViewById(R.id.mainUpcomingPrayer);
 		this.upcomingTime = (TextView) rootView.findViewById(R.id.mainUpcomingTimeLeft);
 		this.clock = (TextView) rootView.findViewById(R.id.mainClock);
-		this.sensorManager = (SensorManager) this.getActivity().getSystemService(MainActivity.SENSOR_SERVICE);
+		this.sensorManager = (SensorManager) this.context.getSystemService(MainActivity.SENSOR_SERVICE);
 		this.sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		this.sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		
-		this.cityName.setOnClickListener(this);
-        	
+		this.mainPrayerTimesProgress = (ProgressBar) rootView.findViewById(R.id.mainPrayerTimesProgress);
+		this.alarmIndicator = (ImageView) rootView.findViewById(R.id.mainAlarmIndicator);
+		this.reminderEnabled = this.prefs.getBoolean("reminderEnabledPreference", false);
+		this.cityName.setOnClickListener(this); 	
 		return rootView;
 	}
 
@@ -113,12 +124,14 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 		this.latitude = Double.valueOf(this.prefs.getString("latitude", "0"));
 		this.longitude = Double.valueOf(this.prefs.getString("longitude", "0"));
 		
-		if(this.latitude == 0 && this.longitude == 0) {
+		if(this.latitude == 0 && this.longitude == 0 || this.prefs.getString("locationModePreference", "0").equals("0")) {
 		
-			GPSTracker gpsTracker = new GPSTracker(getActivity());
+			GPSTracker gpsTracker = new GPSTracker(this.context);
 			if(gpsTracker.canGetLocation()) {
 				this.latitude = gpsTracker.getLatitude(); //-7.952280;
 		        this.longitude = gpsTracker.getLongitude(); //112.608851;
+		        this.prefs.edit().putString("latitude", String.valueOf(this.latitude)).commit();
+		        this.prefs.edit().putString("longitude", String.valueOf(this.longitude)).commit();
 			} else {
 				gpsTracker.showSettingsAlert();
 			}
@@ -128,18 +141,23 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault());
         SimpleDateFormat sdfTz = new SimpleDateFormat("Z", Locale.getDefault());
         
-        double timezone = Math.floor(Double.parseDouble(sdfTz.format(calendar.getTime()))/100);
+        this.timezone = Integer.valueOf(this.prefs.getString("timezonePreference", "0"));
+        if(timezone == 0) {
+        	this.timezone = (int) Math.floor(Double.parseDouble(sdfTz.format(calendar.getTime()))/100);
+        	if(this.timezone != 0)
+        		this.prefs.edit().putString("timezonePreference", String.valueOf(this.timezone)).commit();
+        }
         
         this.calendarGregorian.setText(sdf.format(calendar.getTime()));
         this.calendarHijr.setText(DateHijri.convert(calendar));
         
-        LocationTask locationTask = new LocationTask(getActivity(), latitude, longitude, this);
+        LocationTask locationTask = new LocationTask(this.context, latitude, longitude, this);
         locationTask.execute();
         this.cityName.setText("Loading...");
         
         if(this.prefs == null)
-        	this.prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		UserLocation userLocation = new UserLocation(latitude, longitude, timezone);
+        	this.prefs = PreferenceManager.getDefaultSharedPreferences(this.context);
+		UserLocation userLocation = new UserLocation(this.latitude, this.longitude, this.timezone);
 		this.calculatePrayerTimesTask = new CalculatePrayerTimesTask(this.prefs, this);
 		this.calculatePrayerTimesTask.execute(userLocation);
 		
@@ -153,12 +171,26 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	
 	@Override
 	public void onResume() {
+		super.onResume();
 		this.calculatePrayerTimes();
 		this.sensorManager.registerListener(this, sensorMagneticField, SensorManager.SENSOR_DELAY_NORMAL);
 		this.sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		if(this.prayerTimes != null && this.prayerTimes.size() > 0)
 		this.handler.post(upcomingPrayerRunnable);
-		super.onResume();
+		
+		if(this.alarmIndicator != null) {
+			if(!this.reminderEnabled)
+				this.alarmIndicator.setVisibility(View.INVISIBLE);
+			else this.alarmIndicator.setVisibility(View.VISIBLE);
+		}
+		
+        if (prefs.getBoolean("firstrun", true)) {
+        	boolean enabled = this.prefs.getBoolean("reminderEnabledPreference", false);
+        	if(enabled)
+        		ReminderHelper.setReminder(this.context, enabled, null);
+        	else ReminderHelper.setReminder(this.context, false, null);
+            prefs.edit().putBoolean("firstrun", false).commit();
+        }
 	}
 	 
 	 @Override
@@ -172,9 +204,10 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 	@Override
 	public void onCalculateComplete(ArrayList<Prayer> prayerTimes) {
 		this.prayerTimes = prayerTimes;
-		PrayerTimesAdapter adapter = new PrayerTimesAdapter(getActivity(), prayerTimes, calendar);
+		this.adapter = new PrayerTimesAdapter(this.context, prayerTimes, calendar);
 		this.prayerTimesListView.setAdapter(adapter);
 		this.handler.post(upcomingPrayerRunnable);
+		this.mainPrayerTimesProgress.setVisibility(View.INVISIBLE);
 	}
 
 	@Override
@@ -196,7 +229,9 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			
 			if(prayerTimes != null && prayerTimes.size() > 0) {
 				int position = 0;
+				
 				for(Prayer p:prayerTimes) {
+					p.setNext(false);
 					if(time < p.getTime()) {
 						if(position == 4)
 						{
@@ -208,6 +243,9 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 					}
 					position++;
 				}
+				nextPrayer.setNext(true);
+				for(int i = position+1; i<prayerTimes.size(); i++) 
+					prayerTimes.get(i).setNext(false);
 			}
 			
 			double timeLeft = 0;
@@ -241,6 +279,7 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 				}
 			} catch(Exception ex) {}
 			
+			adapter.notifyDataSetChanged();
 			handler.postDelayed(this, 500);
 		}
 	};
@@ -297,10 +336,15 @@ public class MainFragment extends Fragment implements CalculatePrayerTimesInterf
 			qiblaDirectionFragment.show(getFragmentManager(), "qiblaFragment");
 			break;
 		case R.id.mainCityNameText:
-			Intent i = new Intent(getActivity(), MapsActivity.class);
+			Intent i = new Intent(this.context, MapsActivity.class);
 			this.startActivity(i);
 			break;
 		}
+	}
+
+	@Override
+	public void onCalculateStart() {
+		this.mainPrayerTimesProgress.setVisibility(View.VISIBLE);
 	}
 	
 }

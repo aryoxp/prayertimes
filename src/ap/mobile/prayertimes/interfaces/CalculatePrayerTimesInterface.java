@@ -5,5 +5,6 @@ import java.util.ArrayList;
 import ap.mobile.prayertimes.base.Prayer;
 
 public interface CalculatePrayerTimesInterface {
+	public void onCalculateStart();
 	public void onCalculateComplete(ArrayList<Prayer> prayerTimes);
 }

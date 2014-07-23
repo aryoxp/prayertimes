@@ -36,7 +36,7 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="Prayer Times v1.0\n\n\u00A9 2014 - Aryo Pinandito\nMobile Application Development Laboratory\nPTIIK Brawijaya University\nhttp://ptiik.ub.ac.id"
+            android:text="Prayer Times v1.1\n\n\u00A9 2014 - Aryo Pinandito\nMobile Application Development Laboratory\nPTIIK Brawijaya University\nhttp://ptiik.ub.ac.id"
             tools:ignore="HardcodedText,UnusedAttribute" />
 
         

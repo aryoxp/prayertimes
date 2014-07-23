@@ -18,7 +18,6 @@ public class PrayerTimesAdapter extends BaseAdapter {
 
 	private Context context;
 	private ArrayList<Prayer> prayerTimes;
-	private double now;
 	private int displayFormat;
 	
 	public PrayerTimesAdapter(Context context, ArrayList<Prayer> prayerTimes, Calendar calendar) {
@@ -27,8 +26,6 @@ public class PrayerTimesAdapter extends BaseAdapter {
 		this.displayFormat = Integer.parseInt(
 				PreferenceManager.getDefaultSharedPreferences(context)
 				.getString("timeFormatPreference",String.valueOf(Prayer.FORMAT_12)));
-		now = calendar.get(Calendar.HOUR_OF_DAY);
-		now += calendar.get(Calendar.MINUTE)/60;
 	}
 	
 	@Override
@@ -67,27 +64,10 @@ public class PrayerTimesAdapter extends BaseAdapter {
 			convertView.setTag(vh);
 		}
 		
-		Prayer pBefore = null;
-		Prayer p = this.prayerTimes.get(position);
-		if(position > 0) {
-			pBefore = this.prayerTimes.get(position-1);
-		} else pBefore = this.prayerTimes.get(this.getCount()-1);
-		
+		Prayer p = this.prayerTimes.get(position);		
 		ViewHolder vh = (ViewHolder) convertView.getTag();
-		if(position == 0) {
-			if(p.getTime() > now || pBefore.getTime() < now) {
-				vh.container.setBackgroundColor(this.context.getResources().getColor(R.color.lime));
-				this.nextPrayerPosition = position;
-			}
-		} else if(pBefore.getTime() < now && p.getTime() > now) {
-			if(position != 4)
-				vh.container.setBackgroundColor(this.context.getResources().getColor(R.color.lime));
-			this.nextPrayerPosition = position;
-		}
-		
-		if(position == 5 && this.nextPrayerPosition == 4)
+		if(p.isNext())
 			vh.container.setBackgroundColor(this.context.getResources().getColor(R.color.lime));
-		
 		vh.prayerNameText.setText(p.getName());
 		vh.prayerTimeText.setText(p.toString(this.displayFormat));
 

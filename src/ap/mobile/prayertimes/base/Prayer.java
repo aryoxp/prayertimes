@@ -1,5 +1,8 @@
 package ap.mobile.prayertimes.base;
 
+import java.util.Calendar;
+import java.util.Locale;
+
 import ap.mobile.prayertimes.utilities.PrayTimeMathHelper;
 
 public class Prayer {
@@ -9,10 +12,21 @@ public class Prayer {
 	public static final int FORMAT_12NS = 2;
 	public static final int FORMAT_FLOATING = 3;
 	
+	public static final int SUBUH = 10;
+	public static final int DZUHUR = 11;
+	public static final int ASHAR = 12;
+	public static final int MAGHRIB = 13;
+	public static final int ISYA = 14;
+	
 	private int hours;
+	private int hours24;
 	private int minutes;
 	private double time;
 	private String name;
+	private int id;
+	
+	private boolean alarmable = false;
+	private boolean isNext = false;
 	
 	public Prayer() {
 		
@@ -23,6 +37,7 @@ public class Prayer {
 		this.time = time;
 		time = PrayTimeMathHelper.fixhour(time + 0.5 / 60.0); // add 0.5 minutes to round
         this.hours = (int) Math.floor(time);
+        this.hours24 = (int) Math.floor(time);
         this.minutes = (int) Math.floor((time - this.hours) * 60.0);
 	}
 	
@@ -40,6 +55,20 @@ public class Prayer {
 	
 	public double getTime() {
 		return this.time;
+	}
+	
+	
+	public void setId(int id) {
+		this.id = id;
+		this.alarmable = true;
+	}
+	
+	public int getId() {
+		return this.id;
+	}
+	
+	public boolean getAlarmable() {
+		return this.alarmable;
 	}
 	
 	public String toString(int format) {
@@ -60,7 +89,8 @@ public class Prayer {
     private String floatToTime24() {
 
         String result = "";
-
+        int hours = this.hours;
+        int minutes = this.minutes;
         if ((hours >= 0 && hours <= 9) && (minutes >= 0 && minutes <= 9)) {
             result = "0" + hours + ":0" + Math.round(minutes);
         } else if ((hours >= 0 && hours <= 9)) {
@@ -76,12 +106,15 @@ public class Prayer {
     // convert double hours to 12h format
     private String floatToTime12(boolean noSuffix) {
 
+    	int hours = this.hours;
+        int minutes = this.minutes;
+        
         String suffix, result;
         if (hours >= 12) suffix = "pm";
         else suffix = "am";
 
         hours = ((((hours + 12) - 1) % 12) + 1);
-
+        
         if (noSuffix == false) {
             if ((hours >= 0 && hours <= 9) && (minutes >= 0 && minutes <= 9)) {
                 result = "0" + hours + ":0" + Math.round(minutes) + " "
@@ -119,8 +152,28 @@ public class Prayer {
     	int minutes = (int) Math.ceil((time-hours) * 60);
     	String timeLeft = "";
     	if(hours > 0)
-    		timeLeft = hours + " hour" + (hours>1?"s ":" ");
-    	timeLeft += minutes + " minute" + (minutes>1?"s":"");
+    		timeLeft = hours + " hour" + (hours > 1?"s ":" ");
+    	timeLeft += minutes + " minute" + (minutes > 1?"s":"");
     	return timeLeft;
     }
+    
+    public Calendar getAlarmCalendar() {
+    	Calendar calendar = Calendar.getInstance(Locale.getDefault());
+    	calendar.set(Calendar.HOUR_OF_DAY, this.hours24);
+    	calendar.set(Calendar.MINUTE, this.minutes);
+    	calendar.set(Calendar.SECOND, 0);
+    	return calendar;
+    }
+    
+    public String getTimeString() {
+    	return this.floatToTime24();
+    }
+
+	public boolean isNext() {
+		return isNext;
+	}
+
+	public void setNext(boolean isNext) {
+		this.isNext = isNext;
+	}
 }

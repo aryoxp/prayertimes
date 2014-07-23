@@ -60,14 +60,26 @@
             android:layout_gravity="center_vertical" />
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/mainPrayerTimesList"
+    <FrameLayout
+        android:id="@+id/prayerTimesContainer"
+        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_weight="1" >
-    </ListView>
+        android:layout_height="wrap_content" >
+
+        <ListView
+            android:id="@+id/mainPrayerTimesList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin" >
+        </ListView>
+
+        <ProgressBar
+            android:id="@+id/mainPrayerTimesProgress"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -110,16 +122,32 @@
                 android:textSize="27sp"
                 tools:ignore="HardcodedText,UnusedAttribute" />
 
-            <TextView
-                android:id="@+id/mainUpcomingTimeLeft"
+            <LinearLayout
+                android:id="@+id/mainAlarmContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:fontFamily="sans-serif-light"
-                android:text="1 hour 23 min"
-                android:textColor="@color/gray"
-                android:textSize="13sp"
-                tools:ignore="HardcodedText,UnusedAttribute" />
+                android:gravity="center_vertical"
+                tools:ignore="UseCompoundDrawables" >
+
+                <ImageView
+                    android:id="@+id/mainAlarmIndicator"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginRight="2dp"
+                    android:src="@drawable/ic_alarm_on"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/mainUpcomingTimeLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center_vertical"
+                    android:fontFamily="sans-serif-light"
+                    android:text="1 hour 23 min"
+                    android:textColor="@color/gray"
+                    android:textSize="13sp"
+                    tools:ignore="HardcodedText,UnusedAttribute" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

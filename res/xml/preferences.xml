@@ -47,6 +47,17 @@
                 android:entryValues="@array/timeFormatValues"
                 android:defaultValue="1"
                 />
+        
+        <ap.mobile.prayertimes.views.PrayerListPreference
+                android:key="timezonePreference"
+                android:title="Local Timezone"
+                android:summary="Timezone offset to display prayer times"
+                android:dialogTitle="Set Timezone"
+                android:entries="@array/timezone"
+                android:entryValues="@array/timezoneValues"
+                android:defaultValue="0"
+                />
+        
     </PreferenceCategory>
     <PreferenceCategory
             android:title="Location Settings">
@@ -64,5 +75,24 @@
                 android:title="Set Location"
                 android:summary="Set your location manually"
                 />
+	</PreferenceCategory>
+	<PreferenceCategory 
+	    android:title="Reminder"
+	    >
+	    <CheckBoxPreference
+            android:key="reminderEnabledPreference"
+            android:title="Enable Prayer Times Notification "
+            android:defaultValue="true"
+            android:summary="Show prayer times reminder notification" />
+	    <CheckBoxPreference
+            android:key="reminderEnabledSoundPreference"
+            android:title="Enable Reminder Sound"
+            android:defaultValue="true"
+            android:summary="Play reminder notification sound" />
+	    <CheckBoxPreference
+            android:key="useAdzanPreference"
+            android:title="Use Adzan Sound"
+            android:defaultValue="false"
+            android:summary="Use Adzan for notification sound" />
 	</PreferenceCategory>
 </PreferenceScreen>
